@@ -12,24 +12,19 @@ export function getCellId(rowIndex, cellIndex) {
 }
 
 export function sanitize(text) {
-    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const sourceBuffer = Buffer.from(escaped);
-    const buffer = Buffer.alloc(sourceBuffer.byteLength); // allocate enough space
-    let letter;
-    let writtenLength = 0;
-    for (let i = 0; i < escaped.length; i++) {
-        letter = escaped[i];
-        if (
-            (letter === '\x09') ||
-            (letter === '\x0A') ||
-            (letter === '\x0D') ||
-            ((letter >= '\x20') && (letter <= '\uD7FF')) ||
-            ((letter >= '\uE000') && (letter <= '\uFFFD'))
-        ) {
-            writtenLength += buffer.write(letter, writtenLength);
-        }
-    }
-    return buffer.toString('utf8', 0, writtenLength);
+    if (text == null) return '';
+
+    const str = String(text);
+
+    const escaped = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    return escaped.split('').filter(letter =>
+        letter === '\x09' ||
+        letter === '\x0A' ||
+        letter === '\x0D' ||
+        (letter >= '\x20' && letter <= '\uD7FF') ||
+        (letter >= '\uE000' && letter <= '\uFFFD')
+    ).join('');
 }
 
 export function timeoutPromised(timeout) {
